@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TranscribePress - Audio & Video to Text</title>
+  <meta name="description" content="Turn recordings, interviews, meetings, lectures and podcasts into text with AI that runs on your own computer. Speakers, Word, PDF and subtitle export. Works offline, nothing is uploaded.">
+  <meta name="theme-color" content="#0f766e">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><img src="icon-192.png" alt="" width="30" height="30"><span>TranscribePress</span></div>
+    <div class="top-btns">
+      <button id="addBtn" class="primary">＋ Add audio or video</button>
+      <button id="recBtn" class="tb">🎙 Record</button>
+      <button id="watchBtn" class="tb">📁 Watch a folder <span class="pro-tag">PRO</span></button>
+      <button id="moreBtn" class="tb">☰</button>
+      <button id="proBtn" class="pro-btn">★ Get Pro</button>
+    </div>
+    <div id="menu" class="menu" hidden>
+      <button id="setBtn">⚙ Transcription settings…</button>
+      <button id="replaceAllBtn">🔎 Find &amp; replace in all transcripts… <span class="pro-tag">PRO</span></button>
+      <button id="backupBtn">💾 Back up all transcripts…</button>
+      <button id="restoreFileBtn">📂 Restore a backup…</button>
+      <button id="storageBtn">💽 Storage used on this computer</button>
+      <hr>
+      <button id="trialBtn">🎁 Try Pro free for 7 days</button>
+      <button id="trialEndBtn" hidden>End the Pro trial</button>
+      <a href="help.html" target="_blank" rel="noopener">❓ How to use TranscribePress</a>
+      <a href="mailto:thequan03072002@gmail.com?subject=TranscribePress%20feedback">✉ Feedback &amp; support</a>
+      <button id="aboutBtn">ℹ About TranscribePress</button>
+    </div>
+    <input id="fileIn" type="file" accept="audio/*,video/*,.mp3,.m4a,.wav,.ogg,.opus,.flac,.aac,.wma,.mp4,.mov,.mkv,.webm,.avi" multiple hidden>
+    <input id="backupIn" type="file" accept=".json,application/json" hidden>
+  </header>
+
+  <main class="layout">
+    <aside class="left">
+      <input id="libSearch" class="search" type="search" placeholder="🔍 Search all transcripts…" aria-label="Search all transcripts">
+      <div id="libList" class="lib"></div>
+      <div id="queueNote" class="hint"></div>
+      <p class="fb-note">💬 Something not working the way you want? Tell me – <a href="mailto:thequan03072002@gmail.com?subject=TranscribePress%20feedback">thequan03072002@gmail.com</a>. I read every message and improve the app.</p>
+    </aside>
+
+    <section class="stage">
+      <div id="empty" class="empty">
+        <div class="drop" id="drop">
+          <div class="big">📝</div>
+          <h1>Turn speech into text – on your own computer</h1>
+          <p>Drop interviews, meetings, lectures, voice memos, podcasts or videos here. The AI listens on this computer: <strong>nothing is uploaded</strong>, and after the first download it works offline.</p>
+          <div class="row-btns center"><button id="addBtn2" class="primary big-btn">＋ Add audio or video</button><button id="recBtn2" class="ghost big-btn">🎙 Record</button></div>
+          <div id="setBox" class="setbox"></div>
+          <p class="muted small">MP3, M4A, WAV, OGG, FLAC, MP4, MOV, MKV, WEBM and more · 30+ languages including English, Spanish, French, German, Chinese, Japanese and Vietnamese</p>
+        </div>
+      </div>
+
+      <div id="view" hidden>
+        <div class="vhead">
+          <input id="title" class="title-in" type="text" maxlength="120" aria-label="Title">
+          <span id="info" class="muted small"></span>
+        </div>
+        <div class="player-wrap">
+          <video id="media" controls preload="metadata" playsinline></video>
+        </div>
+        <div class="bar">
+          <button id="goBtn" class="primary">✍ Transcribe</button>
+          <button id="stopBtn" class="ghost" hidden>⏹ Stop</button>
+          <button id="spkBtn" class="ghost">👥 Find speakers <span class="pro-tag">PRO</span></button>
+          <button id="fillBtn" class="ghost" title="Remove um, uh, er…">🧹 Remove “um”</button>
+          <button id="findBtn" class="ghost">🔎 Find &amp; replace</button>
+          <button id="clipBtn" class="ghost">✂ Save a clip <span class="pro-tag">PRO</span></button>
+          <span class="spacer"></span>
+          <button id="exportBtn" class="primary">⬇ Export</button>
+          <button id="shareBtn" class="ghost">🔗 Share file <span class="pro-tag">PRO</span></button>
+          <button id="delBtn" class="ghost danger" title="Delete this transcript">🗑</button>
+        </div>
+        <div id="prog" class="progress" hidden><div class="pbar"><i id="pfill"></i></div><span id="ptext" class="muted small"></span></div>
+        <div id="trialNote" class="trial-note" hidden>🎁 Made with a Pro feature during your trial – buy Pro to export, copy or share it.</div>
+        <div class="split">
+          <div id="lines" class="lines"></div>
+          <aside id="side" class="side">
+            <section id="peopleBox" hidden>
+              <h3>👥 Speakers</h3>
+              <div id="people"></div>
+              <div class="row-btns tight"><button id="rememberBtn" class="ghost small">🧠 Remember these voices</button></div>
+              <p id="bank" class="hint"></p>
+            </section>
+            <section>
+              <h3>📊 Overview</h3>
+              <div id="stats" class="muted small"></div>
+            </section>
+            <section id="clipBox" hidden>
+              <h3>✂ Save a clip</h3>
+              <p class="hint">Click the first line, then Shift + click the last line of the part you want.</p>
+              <p id="clipInfo" class="small"></p>
+              <div class="row-btns tight"><button id="clipWav" class="primary small">⬇ Save clip (WAV)</button><button id="clipCancel" class="ghost small">Cancel</button></div>
+            </section>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="setDialog" class="dlg">
+    <h2>Transcription settings</h2>
+    <div id="setBox2"></div>
+    <div class="row-btns"><button id="setOk" class="primary">✓ Done</button></div>
+  </dialog>
+
+  <dialog id="exportDialog" class="dlg wide">
+    <h2>Export</h2>
+    <div class="formats" id="formats"></div>
+    <div class="opts">
+      <label class="check"><input id="exTimes" type="checkbox" checked> Show times</label>
+      <label class="check"><input id="exSpk" type="checkbox" checked> Show speakers</label>
+    </div>
+    <fieldset class="redact"><legend>🔒 Hide private details <span class="pro-tag">PRO</span></legend>
+      <label class="check"><input id="rdEmail" type="checkbox"> E-mail addresses</label>
+      <label class="check"><input id="rdPhone" type="checkbox"> Phone numbers</label>
+      <label class="check"><input id="rdCard" type="checkbox"> Card numbers</label>
+      <label class="check"><input id="rdUrl" type="checkbox"> Links</label>
+      <label class="check"><input id="rdSsn" type="checkbox"> ID numbers (123-45-6789)</label>
+      <label class="field">Names or words to hide (comma between them)<input id="rdNames" type="text" placeholder="e.g. Anna, Acme Ltd"></label>
+    </fieldset>
+    <p id="exMsg" class="pro-msg" hidden></p>
+    <div class="row-btns"><button id="exGo" class="primary">⬇ Save</button><button id="exCopy" class="ghost">📋 Copy text</button><button id="exCancel" class="ghost">Cancel</button></div>
+  </dialog>
+
+  <dialog id="findDialog" class="dlg">
+    <h2 id="findTitle">Find &amp; replace</h2>
+    <label class="field">Find<input id="fFind" type="text"></label>
+    <label class="field">Replace with<input id="fRepl" type="text"></label>
+    <label class="check"><input id="fCase" type="checkbox"> Match capital letters</label>
+    <p id="fMsg" class="hint"></p>
+    <div class="row-btns"><button id="fGo" class="primary">Replace all</button><button id="fCancel" class="ghost">Close</button></div>
+  </dialog>
+
+  <dialog id="recDialog" class="dlg">
+    <h2>Record</h2>
+    <p class="muted">Record your voice, a lecture, or an online meeting (Zoom, Teams, Meet…) with the sound of the computer. The recording stays on this computer and is written down when you stop.</p>
+    <div class="row-btns col">
+      <button id="recMic" class="primary">🎙 Microphone only</button>
+      <button id="recMeet" class="ghost">🖥 Meeting: computer sound + my microphone <span class="pro-tag">PRO</span></button>
+    </div>
+    <p class="hint">For a meeting, choose the screen or window and tick <b>Share system audio</b> (Windows) or <b>Share tab audio</b>.</p>
+    <div id="recLive" class="rec-live" hidden><span class="rec-dot"></span> <span id="recTime">0:00</span> <button id="recStop" class="primary">⏹ Stop and write it down</button></div>
+    <div class="row-btns"><button id="recClose" class="ghost">Close</button></div>
+  </dialog>
+
+  <dialog id="proDialog" class="dlg">
+    <h2>TranscribePress Pro</h2>
+    <p class="muted">One-time purchase. Yours forever on this Microsoft account. No subscription, ever.</p>
+    <ul class="pro-list">
+      <li><strong>Recordings of any length</strong> <span class="muted">(free: the first 15 minutes of each file)</span></li>
+      <li><strong>Very accurate and Most accurate quality</strong> – far fewer mistakes with accents, names and many languages</li>
+      <li><strong>Many files at once</strong> and a <strong>watched folder</strong> that writes down every new recording</li>
+      <li><strong>Who said what</strong> – finds the speakers, remembers voices for next time</li>
+      <li><strong>Word, PDF, Markdown, web page, CSV and JSON</strong> export, with private details hidden on request</li>
+      <li><strong>Interactive share file</strong> – sound and text in one file, click a sentence to hear it</li>
+      <li><strong>Audio clips</strong> of any quote, <strong>meeting recording</strong> and <strong>translation into English</strong></li>
+    </ul>
+    <p class="fb-note">💬 Something not working the way you want? Tell me – <a href="mailto:thequan03072002@gmail.com?subject=TranscribePress%20feedback">thequan03072002@gmail.com</a>. I read every message and improve the app.</p>
+    <p id="proMsg" class="pro-msg" hidden></p>
+    <div class="row-btns">
+      <button id="buyBtn" class="primary" autofocus>Unlock Pro</button>
+      <button id="restoreBtn" class="ghost">Restore purchase</button>
+      <button id="closePro" class="ghost">Not now</button>
+    </div>
+  </dialog>
+
+  <dialog id="aboutDialog" class="dlg">
+    <h2>TranscribePress</h2>
+    <p>Version 1.0 · Developed by <b>NTQ37</b>.</p>
+    <p class="muted small">TranscribePress™ © 2026 NTQ37. All rights reserved. Speech recognition: OpenAI Whisper models (MIT) via Transformers.js (Apache-2.0); speaker voices: WeSpeaker (Apache-2.0).</p>
+    <div class="row-btns"><button id="aboutPro" class="primary">★ Activate Pro</button><button id="aboutClose" class="ghost">Close</button></div>
+  </dialog>
+
+  <div id="toast" class="toast" hidden></div>
+  <div id="restartBar" class="restart" hidden>A new version of TranscribePress is ready. <button id="restartBtn" class="primary">Restart now</button></div>
+  <div id="printArea" class="print-area"></div>
+  <script src="core.js"></script>
+  <script src="tp-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
